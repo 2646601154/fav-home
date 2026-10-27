@@ -3,6 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # 定时同步 Star 的提交由 GITHUB_TOKEN 推上来，不会触发 push 事件，
+  # 所以额外监听同步工作流结束，保证新数据能自动发布。
+  workflow_run:
+    workflows: ['Sync GitHub stars']
+    types: [completed]
   workflow_dispatch:
 
 permissions:

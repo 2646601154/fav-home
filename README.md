@@ -56,7 +56,7 @@
 
 ## 本地运行
 
-需要 Node 20+（CI 用 22）。
+需要 Node ≥ 22.23.4（Astro 7 的最低要求；两个工作流都用 Node 24）。
 
 ```bash
 npm install
@@ -144,6 +144,7 @@ skill / mcp 额外需要 `install`：
 - 没有变化就不提交。
 - `STAR_TOKEN` 缺失时工作流**直接失败**并给出提示，不会生成空数据；拉到 0 个 Star 也不会覆盖旧文件。
 - Token 只从 Secret 注入环境变量，命令里不打印、不 `echo`，日志里也没有。
+- 同步产生的提交由 `GITHUB_TOKEN` 推送，不会触发 `push` 事件，所以 `deploy.yml` 额外监听 `Sync GitHub stars` 运行结束（`workflow_run`），新数据会自动重新发布。
 
 本地想试一下：
 
@@ -153,6 +154,12 @@ STAR_TOKEN=ghp_xxx node scripts/sync-stars.mjs
 
 # PowerShell
 $env:STAR_TOKEN="ghp_xxx"; node scripts/sync-stars.mjs
+```
+
+Windows 上如果 `node` 报 `unable to get local issuer certificate`（公司代理 / 杀毒软件替换了根证书），加上系统证书：
+
+```powershell
+$env:STAR_TOKEN="ghp_xxx"; node --use-system-ca scripts/sync-stars.mjs
 ```
 
 ### stars.json 结构
@@ -184,8 +191,11 @@ $env:STAR_TOKEN="ghp_xxx"; node scripts/sync-stars.mjs
 ### GitHub Pages（推荐，已内置工作流）
 
 1. 把仓库推送到 GitHub，默认分支为 `main`。
-2. **Settings → Pages → Build and deployment → Source 选 “GitHub Actions”**。
+2. **Settings → Pages → Build and deployment → Source 选 “GitHub Actions”**（也可以直接用 API 开启：
+   `gh api -X POST repos/<owner>/<repo>/pages -f build_type=workflow`）。
 3. push 后 `.github/workflows/deploy.yml` 会自动构建并发布。
+
+本仓库当前地址：<https://2646601154.github.io/fav-home/>
 
 `deploy.yml` 会自己判断部署路径：
 
