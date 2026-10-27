@@ -26,7 +26,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
 
       # 默认的 GITHUB_TOKEN 不能代表用户读取 /user/starred，
       # 所以这里强制要求单独配置只读 PAT，缺失时直接失败，绝不静默生成空数据。

@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
   "description": "个人数字花园：GitHub Star、收藏网站、Skills 与 MCP 导航",
   "scripts": {
     "dev": "astro dev",

@@ -4,13 +4,13 @@
  */
 export const siteConfig = {
   /** 昵称 / 站点名 */
-  name: 'Your Name',
+  name: 'Xiaruoxin',
   /** 首字母占位；留空自动取 name 的第一个字符 */
-  initials: '',
+  initials: 'X',
   /** 一句简介 */
   bio: '在收集好用的工具、Skill 和 MCP，顺手整理成一张可以搜索的索引。',
   /** GitHub 主页 */
-  github: 'https://github.com/your-github',
+  github: 'https://github.com/2646601154',
   /** 头像地址，留空用首字母占位，例如 /avatar.png 或完整 https 链接 */
   avatar: '',
   /** 页面标题 */
