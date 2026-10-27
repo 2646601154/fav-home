@@ -1,0 +1,32 @@
+---
+interface Props {
+  placeholder?: string;
+}
+
+const { placeholder = '搜索名称、备注、标签…' } = Astro.props;
+---
+
+<div class="search">
+  <label class="sr-only" for="site-search">搜索名称、备注、标签或描述</label>
+  <svg class="search__icon" viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" focusable="false">
+    <circle cx="7" cy="7" r="4.6"></circle>
+    <path d="M10.4 10.4 14 14"></path>
+  </svg>
+  <input
+    id="site-search"
+    class="search__input"
+    type="search"
+    name="q"
+    placeholder={placeholder}
+    aria-label="搜索名称、备注、标签或描述"
+    autocomplete="off"
+    spellcheck="false"
+    data-search-input
+  />
+  <button type="button" class="search__clear" data-search-clear hidden aria-label="清空搜索">
+    <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" focusable="false">
+      <path d="M4 4l8 8M12 4l-8 8"></path>
+    </svg>
+  </button>
+  <kbd class="search__kbd" aria-hidden="true">/</kbd>
+</div>

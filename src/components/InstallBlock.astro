@@ -1,0 +1,71 @@
+---
+import CopyButton from './CopyButton.astro';
+import { INSTALL_KIND_LABELS, type InstallInfo } from '../lib/items';
+
+interface Props {
+  install: InstallInfo;
+}
+
+const { install } = Astro.props;
+
+const kindLabel = INSTALL_KIND_LABELS[install.kind];
+const configJson = install.configJson;
+const hasPlaceholder = /\$\{[A-Za-z0-9_]+\}/.test(`${install.command ?? ''}\n${configJson ?? ''}`);
+---
+
+<details class="install" data-install>
+  <summary class="install__summary">
+    <span class="install__chevron" aria-hidden="true"></span>
+    <span class="install__title">安装方式</span>
+    <span class="install__kind">{kindLabel}</span>
+  </summary>
+
+  <div class="install__body">
+    {
+      install.command && (
+        <section class="install__section">
+          <header class="install__head">
+            <h4 class="install__label">命令</h4>
+            <CopyButton text={install.command} label="复制命令" />
+          </header>
+          <pre class="code"><code>{install.command}</code></pre>
+        </section>
+      )
+    }
+
+    {
+      configJson && (
+        <section class="install__section">
+          <header class="install__head">
+            <h4 class="install__label">客户端配置（JSON）</h4>
+            <CopyButton text={configJson} label="复制配置" />
+          </header>
+          <pre class="code code--json"><code>{configJson}</code></pre>
+        </section>
+      )
+    }
+
+    {
+      install.path_hint && (
+        <p class="install__hint">
+          <span class="install__hint-label">路径 / 环境变量</span>
+          {install.path_hint}
+        </p>
+      )
+    }
+
+    {
+      configJson && (
+        <p class:list={['install__note', hasPlaceholder && 'install__note--warn']} role="note">
+          <span class="install__note-icon" aria-hidden="true">
+            {hasPlaceholder ? '!' : 'i'}
+          </span>
+          <span>
+            {'请将配置中的 ${...} 占位符替换为你自己的密钥，不要提交到公开仓库。'}
+            {hasPlaceholder && <span class="install__note-extra">当前配置仍含占位符，直接使用会认证失败。</span>}
+          </span>
+        </p>
+      )
+    }
+  </div>
+</details>

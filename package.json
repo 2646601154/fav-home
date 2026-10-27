@@ -1,0 +1,25 @@
+{
+  "name": "fav-home",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "个人数字花园：GitHub Star、收藏网站、Skills 与 MCP 导航",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro",
+    "sync:stars": "node scripts/sync-stars.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.4.2",
+    "js-yaml": "^5.5.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@types/node": "^26.6.5",
+    "typescript": "^5.9.3"
+  }
+}

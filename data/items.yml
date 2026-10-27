@@ -1,0 +1,118 @@
+# 手工维护的收藏数据。
+#
+# 字段说明：
+#   type     必填，只能是 website / skill / mcp
+#   name     必填，展示名称
+#   url      必填，原地址（http/https）
+#   category 分类，用于筛选
+#   tags     标签数组
+#   note     备注
+#   icon     仅 website 使用，图标地址（加载失败会自动回退成首字母）
+#   install  skill / mcp 必填：
+#     kind        npx / uvx / shell / docker / config-only
+#     command     安装或运行命令（config-only 可省略）
+#     config      客户端配置对象，也可以是 JSON 字符串；页面会格式化成多行 JSON
+#     path_hint   路径 / 环境变量提示
+#
+# 安全：MCP 配置里的密钥一律写成 ${PLACEHOLDER} 占位符，真实密钥不要进仓库。
+
+items:
+  # ---------- 收藏网站 ----------
+  - type: website
+    name: Excalidraw
+    url: https://excalidraw.com
+    category: 工具
+    tags: [绘图, 白板]
+    note: 手绘风格白板，随手画架构图和流程草图很顺手。
+    icon: https://excalidraw.com/favicon.ico
+
+  - type: website
+    name: Squoosh
+    url: https://squoosh.app
+    category: 工具
+    tags: [图片, 压缩]
+    note: 浏览器里直接压图，支持 WebP / AVIF，图片不上传服务器。
+    icon: https://squoosh.app/favicon.ico
+
+  - type: website
+    name: Astro 文档
+    url: https://docs.astro.build
+    category: 文档
+    tags: [Astro, 前端]
+    note: 本站的技术栈文档，查配置和 API 最快的地方。
+    icon: https://docs.astro.build/favicon.svg
+
+  - type: website
+    name: Hacker News
+    url: https://news.ycombinator.com
+    category: 资讯
+    tags: [社区, 阅读]
+    note: 每天扫一眼，技术圈的风向标。
+    icon: https://news.ycombinator.com/favicon.ico
+
+  # ---------- Skills ----------
+  - type: skill
+    name: pdf
+    url: https://github.com/anthropics/skills/tree/main/document-skills/pdf
+    category: 文档
+    tags: [官方, pdf]
+    note: PDF 读取与生成：抽取文本、填表单、合并拆分页面。
+    install:
+      kind: shell
+      command: git clone https://github.com/anthropics/skills.git ~/.claude/skills/anthropic-skills
+      path_hint: 克隆后把 document-skills/pdf 放到 ~/.claude/skills/pdf/，或项目内的 .claude/skills/pdf/。
+
+  - type: skill
+    name: docx
+    url: https://github.com/anthropics/skills/tree/main/document-skills/docx
+    category: 文档
+    tags: [官方, word]
+    note: Word 文档的读取、批注和生成。
+    install:
+      kind: shell
+      command: git clone https://github.com/anthropics/skills.git ~/.claude/skills/anthropic-skills
+      path_hint: 将 anthropic-skills/document-skills/docx 复制为 ~/.claude/skills/docx/。
+
+  # ---------- MCP ----------
+  - type: mcp
+    name: filesystem
+    url: https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem
+    category: 文件系统
+    tags: [官方, 本地]
+    note: 让模型读写指定目录下的文件，权限只到这个目录。
+    install:
+      kind: npx
+      command: npx -y @modelcontextprotocol/server-filesystem /path/to/dir
+      config:
+        mcpServers:
+          filesystem:
+            command: npx
+            args:
+              - -y
+              - '@modelcontextprotocol/server-filesystem'
+              - /path/to/dir
+      path_hint: 把 /path/to/dir 换成你自己的目录，可以追加多个目录。
+
+  - type: mcp
+    name: github
+    url: https://github.com/github/github-mcp-server
+    category: 代码托管
+    tags: [官方, 远程, 需要密钥]
+    note: GitHub 官方 MCP Server，查仓库、Issue、PR 和 Actions 状态。
+    install:
+      kind: docker
+      command: docker run -i --rm -e GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_TOKEN} ghcr.io/github/github-mcp-server
+      config:
+        mcpServers:
+          github:
+            command: docker
+            args:
+              - run
+              - -i
+              - --rm
+              - -e
+              - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_TOKEN}
+              - ghcr.io/github/github-mcp-server
+            env:
+              GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_TOKEN}
+      path_hint: 先把 ${GITHUB_TOKEN} 换成你自己的只读 PAT，并在 GitHub 上把权限限制到需要的仓库。

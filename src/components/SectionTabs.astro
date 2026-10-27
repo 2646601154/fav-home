@@ -1,0 +1,40 @@
+---
+import type { ItemType } from '../lib/items';
+
+interface Tab {
+  id: ItemType | 'stars';
+  label: string;
+  count: number | null;
+}
+
+interface Props {
+  tabs: Tab[];
+}
+
+const { tabs } = Astro.props;
+const firstTab = tabs[0]?.id ?? 'stars';
+---
+
+<div class="tabs">
+  <div class="tabs__inner" role="tablist" aria-label="内容分类">
+    {
+      tabs.map((tab) => (
+        <button
+          type="button"
+          class="tab"
+          role="tab"
+          id={`tab-${tab.id}`}
+          aria-controls={`panel-${tab.id}`}
+          aria-selected={tab.id === firstTab ? 'true' : 'false'}
+          tabindex={tab.id === firstTab ? 0 : -1}
+          data-tab={tab.id}
+        >
+          <span class="tab__label">{tab.label}</span>
+          <span class="tab__count" data-tab-count={tab.id}>
+            {tab.count ?? '—'}
+          </span>
+        </button>
+      ))
+    }
+  </div>
+</div>

@@ -1,0 +1,220 @@
+---
+import '../styles/global.css';
+import { siteConfig } from '../site.config';
+import { itemCounts, itemsByType, listCategories, ITEM_TYPE_LABELS, type ItemType } from '../lib/items';
+import ItemCard from '../components/ItemCard.astro';
+import SearchBar from '../components/SearchBar.astro';
+import SectionTabs from '../components/SectionTabs.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+
+const base = import.meta.env.BASE_URL;
+const starsUrl = `${base}data/stars.json`;
+
+const initials = (siteConfig.initials || siteConfig.name.trim()[0] || '?').toUpperCase();
+
+const sections: { type: ItemType; label: string; hint: string }[] = [
+  { type: 'website', label: '收藏网站', hint: '手工维护，随时增删' },
+  { type: 'skill', label: 'Skills', hint: '只提供复制，不自动执行安装' },
+  { type: 'mcp', label: 'MCP', hint: '配置里的密钥一律是占位符' },
+];
+
+const tabs = [
+  { id: 'stars' as const, label: 'Star 项目', count: null },
+  { id: 'website' as const, label: '收藏网站', count: itemCounts.website },
+  { id: 'skill' as const, label: 'Skills', count: itemCounts.skill },
+  { id: 'mcp' as const, label: 'MCP', count: itemCounts.mcp },
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{siteConfig.title}</title>
+    <meta name="description" content={siteConfig.description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#fcfbf9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121211" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <meta property="og:title" content={siteConfig.title} />
+    <meta property="og:description" content={siteConfig.description} />
+    <meta property="og:type" content="website" />
+
+    <script is:inline>
+      // 在首屏渲染前决定主题，避免闪白 / 闪黑
+      (() => {
+        try {
+          const stored = localStorage.getItem('fav-home-theme');
+          const dark =
+            stored === 'dark' || stored === 'light'
+              ? stored === 'dark'
+              : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        } catch (_error) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+
+    <div class="shell">
+      <header class="hero">
+        <div class="hero__avatar" aria-hidden="true">
+          {
+            siteConfig.avatar ? (
+              <img src={siteConfig.avatar} alt="" width="64" height="64" loading="eager" decoding="async" />
+            ) : (
+              <span>{initials}</span>
+            )
+          }
+        </div>
+
+        <div class="hero__id">
+          <h1 class="hero__name">{siteConfig.name}</h1>
+          <p class="hero__bio">{siteConfig.bio}</p>
+        </div>
+
+        <div class="hero__actions">
+          <a class="btn btn--ghost" href={siteConfig.github} target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+              ></path>
+            </svg>
+            <span>GitHub</span>
+          </a>
+          <ThemeToggle />
+        </div>
+      </header>
+
+      <main id="main">
+        <div class="toolbar">
+          <SearchBar />
+          <p class="toolbar__summary">
+            共 <strong>{itemCounts.total}</strong> 条手工收藏，Star 项目自动同步。
+          </p>
+        </div>
+
+        <SectionTabs tabs={tabs} />
+
+        <p class="sr-only" role="status" data-status></p>
+
+        <!-- Star 项目 -->
+        <section
+          class="panel"
+          id="panel-stars"
+          role="tabpanel"
+          aria-labelledby="tab-stars"
+          tabindex="0"
+          data-panel="stars"
+          data-stars-url={starsUrl}
+        >
+          <div class="panel__bar">
+            <div class="chips" data-chips="stars" aria-label="按语言筛选" hidden></div>
+            <div class="panel__meta">
+              <p class="panel__note" data-stars-updated hidden></p>
+              <p class="panel__count" data-panel-count="stars">加载中…</p>
+            </div>
+          </div>
+
+          <div class="grid" data-grid="stars" aria-busy="true">
+            {
+              [0, 1, 2].map(() => (
+                <div class="card card--skeleton" aria-hidden="true">
+                  <span class="skeleton skeleton--title" />
+                  <span class="skeleton skeleton--line" />
+                  <span class="skeleton skeleton--line" />
+                  <span class="skeleton skeleton--short" />
+                </div>
+              ))
+            }
+          </div>
+
+          <p class="empty" data-empty="stars" hidden></p>
+
+          <div class="notice" data-stars-error hidden role="alert">
+            <p class="notice__title">Star 列表暂时加载失败</p>
+            <p class="notice__body">
+              可能是 <code>data/stars.json</code> 还没生成（首次部署要先运行一次同步工作流），或者网络 / 路径问题。
+              收藏网站、Skills 和 MCP 不受影响。
+            </p>
+            <p class="notice__detail" data-stars-error-detail hidden></p>
+            <button type="button" class="btn" data-stars-retry>重新加载</button>
+          </div>
+
+          <noscript>
+            <p class="notice notice--plain">Star 列表需要 JavaScript 才能从 <code>data/stars.json</code> 读取。</p>
+          </noscript>
+        </section>
+
+        <!-- 手工维护的三个板块 -->
+        {
+          sections.map(({ type, label, hint }) => {
+            const list = itemsByType[type];
+            const categories = listCategories(list);
+            return (
+              <section
+                class="panel"
+                id={`panel-${type}`}
+                role="tabpanel"
+                aria-labelledby={`tab-${type}`}
+                tabindex="0"
+                data-panel={type}
+                hidden
+              >
+                <div class="panel__bar">
+                  <div class="chips" data-chips={type} aria-label={`${label}分类筛选`}>
+                    <button type="button" class="chip" data-filter="all" aria-pressed="true">
+                      全部<span class="chip__count">{list.length}</span>
+                    </button>
+                    {categories.map(({ name, count }) => (
+                      <button type="button" class="chip" data-filter={name} aria-pressed="false">
+                        {name}
+                        <span class="chip__count">{count}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div class="panel__meta">
+                    <p class="panel__count" data-panel-count={type}>
+                      {list.length} 项
+                    </p>
+                  </div>
+                </div>
+
+                <p class="panel__note">{label} · {hint}</p>
+
+                <div class="grid" data-grid={type}>
+                  {list.map((item) => (
+                    <ItemCard item={item} />
+                  ))}
+                </div>
+
+                <p class="empty" data-empty={type} hidden>
+                  没有匹配的条目，换个关键词或分类试试。
+                </p>
+              </section>
+            );
+          })
+        }
+      </main>
+
+      <footer class="footer">
+        <p>{siteConfig.footer}</p>
+        <p class="footer__meta">
+          <a href={`${base}data/stars.json`} target="_blank" rel="noopener noreferrer">stars.json</a>
+          <span aria-hidden="true">·</span>
+          <span>{ITEM_TYPE_LABELS.website} / {ITEM_TYPE_LABELS.skill} / {ITEM_TYPE_LABELS.mcp} 来自 data/items.yml</span>
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      import '../scripts/app';
+    </script>
+  </body>
+</html>

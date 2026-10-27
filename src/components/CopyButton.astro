@@ -1,0 +1,27 @@
+---
+interface Props {
+  /** 要复制的纯文本。Astro 会做 HTML 转义，前端从 dataset 读回原文。 */
+  text: string;
+  label?: string;
+  /** 只显示图标（空间紧张时用） */
+  iconOnly?: boolean;
+}
+
+const { text, label = '复制', iconOnly = false } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={['copy', iconOnly && 'copy--icon']}
+  data-copy={text}
+  data-copy-label={label}
+  aria-label={`${label}到剪贴板`}
+  title={`${label}到剪贴板`}
+>
+  <svg class="copy__icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
+    <rect x="5.75" y="1.75" width="7.5" height="9.5" rx="1.6"></rect>
+    <rect x="2.75" y="4.75" width="7.5" height="9.5" rx="1.6"></rect>
+    <path d="M5.25 8.25h2.5M5.25 10.75h3.4"></path>
+  </svg>
+  <span class="copy__label" data-copy-label-text>{label}</span>
+</button>

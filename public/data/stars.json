@@ -1,0 +1,77 @@
+{
+  "updated_at": "2026-10-26T03:17:00Z",
+  "items": [
+    {
+      "name": "astro",
+      "full_name": "withastro/astro",
+      "html_url": "https://github.com/withastro/astro",
+      "description": "The web framework for content-driven websites.",
+      "language": "TypeScript",
+      "stargazers_count": 52841,
+      "updated_at": "2026-10-25T18:42:00Z",
+      "topics": ["astro", "framework", "static-site-generator", "ssr"],
+      "archived": false,
+      "fork": false
+    },
+    {
+      "name": "shadcn-ui",
+      "full_name": "shadcn-ui/ui",
+      "html_url": "https://github.com/shadcn-ui/ui",
+      "description": "A set of beautifully-designed, accessible components and a code distribution platform.",
+      "language": "TypeScript",
+      "stargazers_count": 96420,
+      "updated_at": "2026-10-24T09:10:00Z",
+      "topics": ["react", "components", "tailwindcss", "radix-ui"],
+      "archived": false,
+      "fork": false
+    },
+    {
+      "name": "servers",
+      "full_name": "modelcontextprotocol/servers",
+      "html_url": "https://github.com/modelcontextprotocol/servers",
+      "description": "Reference implementations for the Model Context Protocol.",
+      "language": "Python",
+      "stargazers_count": 71305,
+      "updated_at": "2026-10-20T14:05:00Z",
+      "topics": ["mcp", "llm", "tools"],
+      "archived": false,
+      "fork": false
+    },
+    {
+      "name": "excalidraw",
+      "full_name": "excalidraw/excalidraw",
+      "html_url": "https://github.com/excalidraw/excalidraw",
+      "description": "Virtual whiteboard for sketching hand-drawn like diagrams.",
+      "language": "TypeScript",
+      "stargazers_count": 108233,
+      "updated_at": "2026-10-26T01:20:00Z",
+      "topics": ["whiteboard", "drawing", "diagram", "canvas"],
+      "archived": false,
+      "fork": false
+    },
+    {
+      "name": "awesome-selfhosted",
+      "full_name": "awesome-selfhosted/awesome-selfhosted",
+      "html_url": "https://github.com/awesome-selfhosted/awesome-selfhosted",
+      "description": "A list of Free Software network services and web applications which can be hosted on your own servers.",
+      "language": null,
+      "stargazers_count": 233101,
+      "updated_at": "2026-09-30T07:31:00Z",
+      "topics": ["awesome-list", "selfhosted", "homelab"],
+      "archived": false,
+      "fork": false
+    },
+    {
+      "name": "legacy-notes",
+      "full_name": "example/legacy-notes",
+      "html_url": "https://github.com/example/legacy-notes",
+      "description": "一条用来演示 archived / fork 标记的示例数据，同步后会被真实数据覆盖。",
+      "language": "JavaScript",
+      "stargazers_count": 42,
+      "updated_at": "2023-02-11T11:11:00Z",
+      "topics": ["demo"],
+      "archived": true,
+      "fork": true
+    }
+  ]
+}

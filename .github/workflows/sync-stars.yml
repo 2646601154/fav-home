@@ -1,0 +1,58 @@
+name: Sync GitHub stars
+
+on:
+  schedule:
+    # 每天 03:17 UTC（北京时间 11:17）同步一次
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+# 只需要写仓库内容，用于把 stars.json 提交回来
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-stars
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 默认的 GITHUB_TOKEN 不能代表用户读取 /user/starred，
+      # 所以这里强制要求单独配置只读 PAT，缺失时直接失败，绝不静默生成空数据。
+      - name: Check STAR_TOKEN
+        env:
+          STAR_TOKEN: ${{ secrets.STAR_TOKEN }}
+        run: |
+          if [ -z "$STAR_TOKEN" ]; then
+            echo "::error title=缺少 STAR_TOKEN::仓库没有配置 STAR_TOKEN Secret。请到 Settings → Secrets and variables → Actions 添加一个只读 PAT（classic 勾选 read:user；fine-grained 只需 Starring 读取权限）。不要使用默认 GITHUB_TOKEN。"
+            exit 1
+          fi
+          echo "STAR_TOKEN 已配置，内容不会输出到日志。"
+
+      - name: Sync stars.json
+        env:
+          STAR_TOKEN: ${{ secrets.STAR_TOKEN }}
+        run: node scripts/sync-stars.mjs
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet -- public/data/stars.json; then
+            echo "stars.json 没有变化，跳过提交。"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/stars.json
+          git commit -m "chore: sync GitHub stars"
+          git push

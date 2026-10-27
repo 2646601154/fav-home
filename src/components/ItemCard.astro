@@ -1,0 +1,80 @@
+---
+import InstallBlock from './InstallBlock.astro';
+import { ITEM_TYPE_LABELS, type Item } from '../lib/items';
+
+interface Props {
+  item: Item;
+}
+
+const { item } = Astro.props;
+
+const typeLabel = ITEM_TYPE_LABELS[item.type];
+const initial = (item.name.trim()[0] ?? '?').toUpperCase();
+const hostname = new URL(item.url).hostname.replace(/^www\./, '');
+---
+
+<article
+  class:list={['card', `card--${item.type}`]}
+  id={item.id}
+  data-type={item.type}
+  data-category={item.category}
+  data-search={item.searchText}
+>
+  <header class="card__head">
+    {
+      item.icon ? (
+        <span class="card__icon card__icon--image" data-icon-wrap>
+          <img
+            class="card__icon-img"
+            src={item.icon}
+            alt=""
+            width="20"
+            height="20"
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            data-icon-img
+          />
+          <span class="card__icon-fallback" aria-hidden="true">{initial}</span>
+        </span>
+      ) : (
+        <span class:list={['card__icon', 'card__icon--mono', `card__icon--${item.type}`]} aria-hidden="true">
+          {initial}
+        </span>
+      )
+    }
+
+    <div class="card__heading">
+      <h3 class="card__title">
+        <a href={item.url} target="_blank" rel="noopener noreferrer">{item.name}</a>
+      </h3>
+      <p class="card__sub">
+        <span class="card__type">{typeLabel}</span>
+        <span class="card__dot" aria-hidden="true">·</span>
+        <span class="card__category">{item.category}</span>
+      </p>
+    </div>
+  </header>
+
+  {item.note && <p class="card__note">{item.note}</p>}
+
+  {
+    item.tags.length > 0 && (
+      <ul class="tags" aria-label="标签">
+        {item.tags.map((tag) => (
+          <li class="tag">{tag}</li>
+        ))}
+      </ul>
+    )
+  }
+
+  {item.install && <InstallBlock install={item.install} />}
+
+  <footer class="card__foot">
+    <a class="card__link" href={item.url} target="_blank" rel="noopener noreferrer">
+      原地址<span class="card__link-icon" aria-hidden="true">↗</span>
+      <span class="sr-only">（在新窗口打开）</span>
+    </a>
+    <span class="card__host" title={item.url}>{hostname}</span>
+  </footer>
+</article>
